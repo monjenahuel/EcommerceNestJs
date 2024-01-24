@@ -15,25 +15,13 @@ import { CarritoService } from './services/carrito.service';
 import { Venta } from './models/Venta';
 import { VentaController } from './controllers/venta/venta.controller';
 import { VentaService } from './services/venta.service';
+import { dbConfig} from './dbconfig';
+
+
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'aws-sa-east-1.connect.psdb.cloud',
-      port:3306,
-      username: 'awfdn5dnkkhmone4kk81',
-      password: 'pscale_pw_pSqTeaNIGsS3LMrW984zuza6W768nD9pfHIfOvlukMV',
-      database: 'nestjsdatabase',
-      autoLoadEntities: true,
-      dropSchema: false,
-      synchronize: false,
-      migrations: [],
-      ssl  : {
-        // DO NOT DO THIS
-        // set up your ca correctly to trust the connection
-        rejectUnauthorized: false
-      }}),
+    TypeOrmModule.forRoot(dbConfig),
     TypeOrmModule.forFeature([Producto, Carrito, User,Venta])
   ],
   controllers: [AppController, ProductoController, UserController, CarritoController, VentaController],
