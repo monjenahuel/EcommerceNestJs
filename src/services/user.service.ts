@@ -39,6 +39,9 @@ export class UserService {
         throw new BadRequestException("El email ingresado ya pertenece a un usuario");
     }
 
+    const carrito: Carrito = new Carrito();
+    user.carrito = carrito;
+
     const userCreado: User = this.userRepository.create(user);
     return this.userRepository.save(userCreado)
   }

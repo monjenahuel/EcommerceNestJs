@@ -1,7 +1,6 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Producto } from "./Producto";
 import { Venta } from "./Venta";
-import { ProductoHistorico } from "./DTO/ProductoHistorico";
 
 @Entity()
 export class DetalleVenta{
@@ -16,5 +15,8 @@ export class DetalleVenta{
     
     @Column()
     public precioDeVenta:number;
+
+    @Column()
+    public cantidad:number;
 
 }

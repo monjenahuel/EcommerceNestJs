@@ -19,5 +19,3 @@ async function bootstrap() {
   console.log("Escuchando en el puerto:",process.env.PORT || 3000)
 }
 bootstrap();
-
-//TODO: Crear interfaz Angular

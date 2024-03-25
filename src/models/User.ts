@@ -15,7 +15,7 @@ export class User{
     @Column({nullable: false, unique: true})
     public email: string;
 
-    @OneToOne(() => Carrito, (carrito) => carrito.user)
+    @OneToOne(() => Carrito, (carrito) => carrito.user,{cascade: true})
     public carrito: Carrito;
 
 }

@@ -84,7 +84,7 @@ export class CarritoService {
     }
     
     //Asigna el valor de la funcion despues de procesarla
-    carrito.priceTotal = await this.calcularPrecioTotal(carr);
+    carrito.priceTotal = await this.calcularPrecioTotal(carrito);
     carrito.id = carr.id
 
     return this.carritoRepository.save(carrito);
