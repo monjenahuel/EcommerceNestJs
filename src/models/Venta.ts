@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { Carrito } from "./Carrito";
+import { DetalleVenta } from "./DetalleVenta";
 
 @Entity()
 export class Venta{
@@ -10,18 +11,15 @@ export class Venta{
     @ManyToOne(() => User, (user) => user.carrito,{nullable: false})
     @JoinColumn({name: "user_id"})
     public user: User;
-    
-    
-    //TODO Esto deberia ser una lista de productos o un carrito? ventaDetalles
-    //TODO: Como hago que recuerde los precios viejos? Crear entidad VentaDetalle -> Con atributo precioDeVenta
-    @ManyToOne(() => Carrito,{nullable: false})
-    @JoinColumn({name: "carrito_id"})
-    public carrito:Carrito;
+
+    @OneToMany(() => DetalleVenta, detalleVenta => detalleVenta.venta,{cascade: true})
+    public detalleVentas:DetalleVenta[];
 
     @Column()
     public monto:number;
 
     @Column()
     public metodoDePago:String;
+
 
 }

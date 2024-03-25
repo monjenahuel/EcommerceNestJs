@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv'
+import { DataSource } from 'typeorm';
 
 dotenv.config();
 
@@ -9,13 +10,11 @@ export const dbConfig = {
   username: process.env.DB_USERNAME as any,
   password: process.env.DB_PASSWORD as any,
   database: process.env.DB_NAME as any,
-  autoLoadEntities: true,
+  autoLoadEntities: true, //Sacar?
   dropSchema: false,
-  synchronize: false,
-  migrations: [],
-  ssl  : {
-    // DO NOT DO THIS
-    // set up your ca correctly to trust the connection
-    rejectUnauthorized: false
-  }
+  synchronize: true,
+  migrations: []//,
+  // ssl  : {
+  //   rejectUnauthorized: false
+  // }
 }

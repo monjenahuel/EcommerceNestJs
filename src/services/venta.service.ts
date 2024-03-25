@@ -5,11 +5,13 @@ import { User } from 'src/models/User';
 import { Venta } from 'src/models/Venta';
 import { Repository } from 'typeorm';
 import { CarritoService } from './carrito.service';
+import { DetalleVenta } from 'src/models/DetalleVenta';
 
 @Injectable()
 export class VentaService {
 
-    constructor(@InjectRepository(Venta) private readonly ventaRepository: Repository<Venta>,
+    constructor(@InjectRepository(DetalleVenta) private readonly detalleVentaRepository: Repository<DetalleVenta>,
+                @InjectRepository(Venta) private readonly ventaRepository: Repository<Venta>,
                 @InjectRepository(User) private readonly userRepository: Repository<User>,
                 @InjectRepository(Carrito) private readonly carritoRepository: Repository<Carrito>,
                 private readonly carritoService: CarritoService){
@@ -17,13 +19,13 @@ export class VentaService {
 
     async getAllVentas(): Promise<Venta[]> {
       console.log("getAllVentas");
-        return await this.ventaRepository.find({relations: ['user', 'carrito.productList']});
+        return await this.ventaRepository.find({relations: ['user', 'detalleVenta']});
       }
     
       async getVentaById(id: number): Promise<Venta>{
         console.log("getVentaById: ",id);
     
-        const venta = await this.ventaRepository.findOne({relations: ['user', 'carrito.productList'], where: {id: id}});
+        const venta = await this.ventaRepository.findOne({relations: ['user', 'detalleVentas', 'detalleVentas.producto'], where: {id: id}});
     
         
         if(!venta){
@@ -33,40 +35,46 @@ export class VentaService {
         return venta
       }
     
-      async createVenta(venta: Venta): Promise<Venta> {
-        console.log("createVenta: ", venta);
+      async createVenta(carrito: Carrito, metodoDePago: String): Promise<Venta> {
         //Verificar existencia de carrito y user
 
-        const userVentaInput: User = venta.user;
-        const userDeLaVenta: User = await this.userRepository.findOneBy({id: userVentaInput.id, email: userVentaInput.email, username: userVentaInput.username})
+        const userCarritoInput: User = carrito.user;
+        const userDeLaVenta: User = await this.userRepository.findOneBy({id: userCarritoInput.id, email: userCarritoInput.email, username: userCarritoInput.username});
 
-        const carritoVentaInput: Carrito = venta.carrito;
-        const carritoDeLaVenta: Carrito = await this.carritoRepository.findOne({relations: {user: true, productList: true}, where:{id: carritoVentaInput.id}});
-  
-    
+        const carritoInput: Carrito = carrito;
+        const carritoBBDD: Carrito = await this.carritoService.getCarritoById(carritoInput.id);
+
         if(!userDeLaVenta){
             throw new BadRequestException("Usuario inexistente")
         }
 
-        if(!carritoDeLaVenta){
+        if(!carritoBBDD){
             throw new BadRequestException("Carrito inexistente")
         }
+        if(carritoBBDD.productList.length == 0){
+            throw new BadRequestException("Carrito vacio")
+        }
         
-        // if(userDeLaVenta !== userVentaInput){
-        //     console.log("Input:",userVentaInput)
-        //     console.log("Repository:",userDeLaVenta)
-        //     throw new BadRequestException("Datos del usuario incorrectos")
-        // }
+        const venta = new Venta();
+        venta.monto = await this.carritoService.calcularPrecioTotal(carritoBBDD);
+        venta.user = userDeLaVenta
 
-        // if(carritoVentaInput != carritoDeLaVenta){
-        //     throw new BadRequestException("Datos del carrito incorrectos")
-        // }
+        //TODO: Logica del metodo de pago a desarrollar
+        venta.metodoDePago = metodoDePago;
 
-        console.log("Test1",carritoDeLaVenta)
-        venta.monto = await this.carritoService.calcularPrecioTotal(carritoDeLaVenta);
+        //Creacion de los detalleVenta
+        const detallesDeVenta: DetalleVenta[] = [];
+        for (const product of carritoBBDD.productList) {
+          const detalleVenta = new DetalleVenta();
+          detalleVenta.producto = product;
+          detalleVenta.precioDeVenta = product.actualPrice;
+          detallesDeVenta.push(detalleVenta);
+        }
 
-        const ventaCreado: Venta = this.ventaRepository.create(venta);
-        return this.ventaRepository.save(ventaCreado)
+        //Asignacion de los detalleVenta a la venta, se persisten por cascada
+        venta.detalleVentas = detallesDeVenta;
+  
+        return this.ventaRepository.save(venta)
       }
     
       async deleteVenta(id: number): Promise<Venta>{
@@ -89,12 +97,14 @@ export class VentaService {
         if(!prod){
             throw new NotFoundException('No existe el id del venta que desea modificar')
           }
-        console.log("Recuperado venta del repo")
-
-        const carritoVentaInput: Carrito = venta.carrito;
-        const carritoDeLaVenta: Carrito = await this.carritoRepository.findOneBy({id: carritoVentaInput.id})
+        
+        //DESCOMENTAR CUANDO SE ROMPA  
+        //const detalleVentaInput: DetalleVenta = venta.detalleVenta;
+        //const detalleDeLaVenta: DetalleVenta = await this.detalleVentaRepository.findOneBy({id: detalleVentaInput.id})
     
-        venta.monto = await this.carritoService.calcularPrecioTotal(carritoDeLaVenta);
+        //venta.monto = prod.detalleVenta.productList.map(product => product.price).reduce((a, b) => a + b, 0);
+        console.log("Monto de venta Actualizado",venta.monto)
+        
         venta.id = prod.id
     
         return this.ventaRepository.save(venta);

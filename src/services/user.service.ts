@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from 'src/models/User';
-import { BlueService } from './dolarBlue.service';
 import { MetadataAlreadyExistsError, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Carrito } from 'src/models/Carrito';
@@ -9,7 +8,6 @@ import { Carrito } from 'src/models/Carrito';
 export class UserService {
   
   constructor(
-    private readonly blueService: BlueService,
     @InjectRepository(User) private readonly userRepository: Repository<User>
     ) {};
 

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './controllers/app.controller';
 import { AppService } from './services/app.service';
-import { BlueService } from './services/dolarBlue.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Producto } from './models/Producto';
 import { ProductoService } from './services/producto.service';
@@ -16,15 +15,16 @@ import { Venta } from './models/Venta';
 import { VentaController } from './controllers/venta/venta.controller';
 import { VentaService } from './services/venta.service';
 import { dbConfig} from './dbconfig';
+import { DetalleVenta } from './models/DetalleVenta';
 
 
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dbConfig),
-    TypeOrmModule.forFeature([Producto, Carrito, User,Venta])
+    TypeOrmModule.forFeature([Producto, Carrito, User,Venta, DetalleVenta])
   ],
   controllers: [AppController, ProductoController, UserController, CarritoController, VentaController],
-  providers: [AppService,BlueService,ProductoService, UserService, CarritoService, VentaService],
+  providers: [AppService,ProductoService, UserService, CarritoService, VentaService],
 })
 export class AppModule {}

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Producto } from 'src/models/Producto';
-import { BlueService } from './dolarBlue.service';
 import { Carrito } from 'src/models/Carrito';
 
 @Injectable()

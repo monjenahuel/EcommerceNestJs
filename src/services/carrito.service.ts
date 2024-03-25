@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Carrito } from 'src/models/Carrito';
-import { BlueService } from './dolarBlue.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/models/User';
 import { Producto } from 'src/models/Producto';
 import { ProductoService } from './producto.service';
+import { Carrito } from 'src/models/Carrito';
 
 @Injectable()
 export class CarritoService {
@@ -78,7 +77,7 @@ export class CarritoService {
 
   async updateCarrito(id: number, carrito: Carrito): Promise<Carrito>{
     
-    const carr = await this.carritoRepository.findOneBy({id});
+    const carr = await this.carritoRepository.findOne({relations: {user: true, productList: true}, where: {id: id}});
 
     if(!carr){
       throw new NotFoundException('No existe el id del carrito que desea modifiar')
@@ -99,10 +98,12 @@ export class CarritoService {
     const promesas = listaDeIdDeProducto.map(id => this.productoService.getProductoById(id));
     const productos = await Promise.all(promesas);
     const precioTotal = productos.reduce((sum, i) => {
-      return sum + i.price;
+      return sum + i.actualPrice;
     }, 0);
     return precioTotal;
   };
+
+  //TODO: Funcion para vaciar el carrito despues de una venta
 
 
 

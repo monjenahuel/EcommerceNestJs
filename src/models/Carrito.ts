@@ -8,16 +8,15 @@ export class Carrito{
     public id:number
 
     @ManyToMany(() => Producto)
-    @JoinTable()
+    @JoinTable({name: "carrito_productos"})
     public productList:Producto[];
 
+    //TODO: Crear DTO para carrito, no tiene sentido persistir priceTotal, es un campo calculado
     @Column()
     public priceTotal:number = 0
 
-    
-    //TODO Carrito deberia ser un One to One?
     @OneToOne(() => User, (user) => user.carrito,{nullable: false})
     @JoinColumn({name: "user_id"}) //Todo: Esto se puede sacar???
-    public user: User;
+    public user: any;
 
 }

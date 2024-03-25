@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Producto } from 'src/models/Producto';
-import { BlueService } from './dolarBlue.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -8,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class ProductoService {
   
   constructor(
-    private readonly blueService: BlueService,
     @InjectRepository(Producto) private readonly productoRepository: Repository<Producto>
     ) {};
 

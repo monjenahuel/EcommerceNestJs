@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Carrito } from 'src/models/Carrito';
 import { Venta } from 'src/models/Venta';
 import { VentaService } from 'src/services/venta.service';
 
@@ -18,8 +19,8 @@ export class VentaController {
     }
   
     @Post()
-    createVenta(@Body() venta: Venta): Promise<Venta> {
-      return this.ventaService.createVenta(venta);
+    async createVenta(@Body() { carrito, metodoDePago }: { carrito: Carrito, metodoDePago: string }): Promise<Venta> { 
+      return this.ventaService.createVenta(carrito,metodoDePago);
     }
   
     @Patch("/:id")
