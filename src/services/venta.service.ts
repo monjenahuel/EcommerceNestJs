@@ -51,7 +51,7 @@ export class VentaService {
         if(!carritoBBDD){
             throw new BadRequestException("Carrito inexistente")
         }
-        if(carritoBBDD.productList.length == 0){
+        if(carritoBBDD.carritoProductos.length == 0){
             throw new BadRequestException("Carrito vacio")
         }
         
@@ -64,10 +64,11 @@ export class VentaService {
 
         //Creacion de los detalleVenta
         const detallesDeVenta: DetalleVenta[] = [];
-        for (const product of carritoBBDD.productList) {
+        for (const carrProd of carritoBBDD.carritoProductos) {
           const detalleVenta = new DetalleVenta();
-          detalleVenta.producto = product;
-          detalleVenta.precioDeVenta = product.actualPrice;
+          detalleVenta.producto = carrProd.producto;
+          detalleVenta.precioDeVenta = carrProd.producto.actualPrice;
+          detalleVenta.cantidad = carrProd.cantidad;
           detallesDeVenta.push(detalleVenta);
         }
 

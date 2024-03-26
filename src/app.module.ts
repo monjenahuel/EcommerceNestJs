@@ -16,13 +16,14 @@ import { VentaController } from './controllers/venta/venta.controller';
 import { VentaService } from './services/venta.service';
 import { dbConfig} from './dbconfig';
 import { DetalleVenta } from './models/DetalleVenta';
+import { CarritoProducto } from './models/CarritoProducto';
 
 
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dbConfig),
-    TypeOrmModule.forFeature([Producto, Carrito, User,Venta, DetalleVenta])
+    TypeOrmModule.forFeature([Producto, Carrito, User,Venta, DetalleVenta,CarritoProducto])
   ],
   controllers: [AppController, ProductoController, UserController, CarritoController, VentaController],
   providers: [AppService,ProductoService, UserService, CarritoService, VentaService],

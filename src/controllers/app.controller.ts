@@ -1,7 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { AppService } from '../services/app.service';
-import { Producto } from 'src/models/Producto';
-import { Carrito } from 'src/models/Carrito';
 import { ProductoService } from 'src/services/producto.service';
 
 @Controller()
