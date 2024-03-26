@@ -7,10 +7,10 @@ export class DetalleVenta{
     @PrimaryGeneratedColumn('increment')
     public id:number
 
-    @ManyToOne(() => Venta, (venta) => venta.detalleVentas)
+    @ManyToOne(() => Venta, (venta) => venta.detalleVenta)
     public venta:Venta;
 
-    @ManyToOne(() => Producto, (producto) => producto.detalleVentas)
+    @ManyToOne(() => Producto, (producto) => producto.detalleVenta)
     public producto:Producto;
     
     @Column()

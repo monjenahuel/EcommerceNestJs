@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Producto } from 'src/models/Producto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,6 +30,11 @@ export class ProductoService {
   }
 
   async createProducto(producto: Producto): Promise<Producto> {
+
+    if(!producto.actualPrice || producto.actualPrice <= 0){
+      throw new BadRequestException('El precio del producto no puede ser menor o igual a 0')
+    }
+
     const productoCreado: Producto = this.productoRepository.create(producto);
     return this.productoRepository.save(productoCreado)
   }

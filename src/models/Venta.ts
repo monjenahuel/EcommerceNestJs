@@ -13,7 +13,7 @@ export class Venta{
     public user: User;
 
     @OneToMany(() => DetalleVenta, detalleVenta => detalleVenta.venta,{cascade: true})
-    public detalleVentas:DetalleVenta[];
+    public detalleVenta:DetalleVenta[];
 
     @Column()
     public monto:number;

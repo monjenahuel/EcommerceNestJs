@@ -22,7 +22,7 @@ export class CarritoService {
 ////////////////////////////////
 
   async getAllCarritos(): Promise<CarritoDTO[]> {
-    const listaDeCarritos: Carrito[] = await this.carritoRepository.find({relations: ['user','carritoProductos.producto']})
+    const listaDeCarritos: Carrito[] = await this.carritoRepository.find({relations: ['user','detalleCarrito.producto']})
     const listaDeCarritosDTO: CarritoDTO[] = []
 
     //El forEach no maneja bien las asincronias, por eso se usa for
@@ -39,7 +39,7 @@ export class CarritoService {
 
     console.log("Arranca getCarritoById", id)
 
-    const carrito = await this.carritoRepository.findOne({relations: ['user','carritoProductos.producto'], where: {id}});
+    const carrito = await this.carritoRepository.findOne({relations: ['user','detalleCarrito.producto'], where: {id}});
     let carritoDTO:CarritoDTO;
 
     console.log("Carrito encontrado: ",carrito)
@@ -60,16 +60,29 @@ export class CarritoService {
 
   async createCarrito(carritoDTO: CarritoDTO): Promise<CarritoDTO> {
 
-    const userCarrito = carritoDTO.user
-    const carritoDeUsuario: Carrito = await this.carritoRepository.findOneBy({user: userCarrito})
+    const userCarrito: User = carritoDTO.user
+    const existentUser: User = await this.userRepository.findOneBy({id: userCarrito.id});
+
+    if(!existentUser){
+        throw new BadRequestException("El usuario no existe");
+    }
+    
+    const carritoDeUsuario: Carrito = await this.carritoRepository.findOneBy({user: existentUser})
 
     if(carritoDeUsuario){
       throw new BadRequestException("El usuario ya posee un carrito")
     }
-
-    carritoDTO.priceTotal = await this.calcularPrecioTotal(carritoDTO);
     
-    return this.carritoRepository.save(carritoDTO)
+    carritoDTO.priceTotal = await this.calcularPrecioTotal(carritoDTO);
+
+    const carritoEntity = new Carrito()
+    carritoEntity.id = carritoDTO.id
+    carritoEntity.user = carritoDTO.user
+    carritoEntity.detalleCarrito = carritoDTO.detalleCarrito
+
+    this.carritoRepository.save(carritoEntity);
+    
+    return carritoDTO
   }
 
   async deleteCarrito(id: number): Promise<Carrito>{
@@ -85,28 +98,36 @@ export class CarritoService {
   }
 
   async updateCarrito(id: number, carritoDTO: CarritoDTO): Promise<CarritoDTO>{
+    console.log("#1 Arranca updateCarrito")
     
-    const carr = await this.carritoRepository.findOne({relations: {user: true, carritoProductos: true}, where: {id: id}});
+    const carr = await this.carritoRepository.findOne({relations: {user: true, detalleCarrito: true}, where: {id: id}});
+
+    console.log("#2 Carrito encontrado: ",carr)
 
     if(!carr){
       throw new NotFoundException('No existe el id del carrito que desea modifiar')
     }
     
     //Asigna el valor de la funcion despues de procesarla
-    carritoDTO.priceTotal = await this.calcularPrecioTotal(carritoDTO);
+    carritoDTO.priceTotal = await this.calcularPrecioTotal(carritoDTO); //Esto puede no tener productos, aca va el del parametro
     carritoDTO.id = carr.id
 
-    this.carritoRepository.save(carritoDTO);
+    const carritoEntity = new Carrito()
+    carritoEntity.id = carritoDTO.id
+    carritoEntity.user = carritoDTO.user
+    carritoEntity.detalleCarrito = carritoDTO.detalleCarrito
 
-    return carritoDTO;
+    this.carritoRepository.save(carritoEntity);
+
+    return carritoDTO
   }
 
   //Funcion asincrona que calcula el precio total de los productos sacados DEL REPOSITORIO
   async calcularPrecioTotal(carrito: Carrito): Promise<number> {
-    console.log(carrito)
+    // console.log(carrito)
     //Lista de los id de los productos del carrito
-    const listaDeIdDeProducto: number[] = carrito.carritoProductos.map((e) => e.id)
-    const listaDeCantidadesDeProducto: number[] = carrito.carritoProductos.map((e) => e.cantidad)
+    const listaDeIdDeProducto: number[] = carrito.detalleCarrito.map((e) => e.id)
+    const listaDeCantidadesDeProducto: number[] = carrito.detalleCarrito.map((e) => e.cantidad)
     
     const promesas = listaDeIdDeProducto.map(id => this.productoService.getProductoById(id));
     const productos = await Promise.all(promesas);

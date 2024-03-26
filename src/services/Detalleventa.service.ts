@@ -17,8 +17,8 @@ export class DetalleVentaService {
                 private readonly carritoService: CarritoService){
     }
 
-    async getAllDetalleVentas(): Promise<DetalleVenta[]> {
-      console.log("getAllDetalleVentas");
+    async getAllDetalleVenta(): Promise<DetalleVenta[]> {
+      console.log("getAllDetalleVenta");
         return await this.detalleVentaRepository.find({relations: ['venta']});
       }
     

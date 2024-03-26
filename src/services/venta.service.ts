@@ -25,7 +25,7 @@ export class VentaService {
       async getVentaById(id: number): Promise<Venta>{
         console.log("getVentaById: ",id);
     
-        const venta = await this.ventaRepository.findOne({relations: ['user', 'detalleVentas', 'detalleVentas.producto'], where: {id: id}});
+        const venta = await this.ventaRepository.findOne({relations: ['user', 'detalleVenta', 'detalleVenta.producto'], where: {id: id}});
     
         
         if(!venta){
@@ -51,7 +51,7 @@ export class VentaService {
         if(!carritoBBDD){
             throw new BadRequestException("Carrito inexistente")
         }
-        if(carritoBBDD.carritoProductos.length == 0){
+        if(carritoBBDD.detalleCarrito.length == 0){
             throw new BadRequestException("Carrito vacio")
         }
         
@@ -64,7 +64,7 @@ export class VentaService {
 
         //Creacion de los detalleVenta
         const detallesDeVenta: DetalleVenta[] = [];
-        for (const carrProd of carritoBBDD.carritoProductos) {
+        for (const carrProd of carritoBBDD.detalleCarrito) {
           const detalleVenta = new DetalleVenta();
           detalleVenta.producto = carrProd.producto;
           detalleVenta.precioDeVenta = carrProd.producto.actualPrice;
@@ -73,7 +73,7 @@ export class VentaService {
         }
 
         //Asignacion de los detalleVenta a la venta, se persisten por cascada
-        venta.detalleVentas = detallesDeVenta;
+        venta.detalleVenta = detallesDeVenta;
   
         return this.ventaRepository.save(venta)
       }

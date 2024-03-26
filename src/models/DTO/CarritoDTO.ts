@@ -1,5 +1,5 @@
 import { Carrito } from "../Carrito";
-import { CarritoProducto } from "../CarritoProducto";
+import { DetalleCarrito } from "../DetalleCarrito";
 import { User } from "../User";
 
 export class CarritoDTO{
@@ -8,12 +8,12 @@ export class CarritoDTO{
         this.id = carrito.id
         this.priceTotal = priceTotal
         this.user = carrito.user
-        this.carritoProductos = carrito.carritoProductos
+        this.detalleCarrito = carrito.detalleCarrito
     }
 
     id:number
     priceTotal:number;
     user: User;
-    carritoProductos:CarritoProducto[];
+    detalleCarrito:DetalleCarrito[];
 }
 

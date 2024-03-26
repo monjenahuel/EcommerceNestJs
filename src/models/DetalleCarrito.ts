@@ -3,15 +3,15 @@ import { Producto } from "./Producto";
 import { Venta } from "./Venta";
 import { Carrito } from "./Carrito";
 
-@Entity({name: 'carrito_producto'})
-export class CarritoProducto {
+@Entity({name: 'detalle_carrito'})
+export class DetalleCarrito {
     @PrimaryGeneratedColumn('increment')
     public id: number;
     
-    @ManyToOne(() => Carrito, (carrito) => carrito.carritoProductos,{onDelete: 'CASCADE'})
+    @ManyToOne(() => Carrito, (carrito) => carrito.detalleCarrito,{onDelete: 'CASCADE'})
     public carrito: Carrito;
 
-    @ManyToOne(() => Producto, (producto) => producto.carritoProductos)
+    @ManyToOne(() => Producto, (producto) => producto.detalleCarrito)
     public producto: Producto;
 
     @Column({ default: 1 })

@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm"
 import { DetalleVenta } from "./DetalleVenta"
-import { CarritoProducto } from "./CarritoProducto"
+import { DetalleCarrito } from "./DetalleCarrito"
 
 @Entity()
 export class Producto{
@@ -22,10 +22,10 @@ export class Producto{
     @Column()
     public image?:string
 
-    // @OneToMany(() => DetalleVenta, detalleVentas => detalleVentas.producto)
-    public detalleVentas:DetalleVenta[];
+    @OneToMany(() => DetalleVenta, detalleVentas => detalleVentas.producto)
+    public detalleVenta:DetalleVenta[];
 
-    @OneToMany(() => CarritoProducto, carritoProductos => carritoProductos.producto)
-    public carritoProductos:CarritoProducto[];
+    @OneToMany(() => DetalleCarrito, detalleCarrito => detalleCarrito.producto)
+    public detalleCarrito:DetalleCarrito[];
 
 }
